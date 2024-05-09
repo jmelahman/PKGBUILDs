@@ -1,13 +1,13 @@
 pkgbase = buildifier-bin
 	pkgdesc = A command line tool to format Bazel BUILD files
-	pkgver = 6.4.0
+	pkgver = 7.1.1
 	pkgrel = 1
 	url = https://github.com/bazelbuild/buildtools
 	arch = x86_64
 	license = Apache
-	source = buildifier-6.4.0::https://github.com/bazelbuild/buildtools/releases/download/v6.4.0/buildifier-linux-amd64
-	source = LICENSE-6.4.0::https://raw.githubusercontent.com/bazelbuild/buildtools/v6.4.0/LICENSE
-	sha256sums = be63db12899f48600bad94051123b1fd7b5251e7661b9168582ce52396132e92
+	source = buildifier-7.1.1::https://github.com/bazelbuild/buildtools/releases/download/v7.1.1/buildifier-linux-amd64
+	source = LICENSE-7.1.1::https://raw.githubusercontent.com/bazelbuild/buildtools/v7.1.1/LICENSE
+	sha256sums = 54b7f2ce8f22761cfad264416e912056ae9c8645f59eb6583b846b4864a1ee83
 	sha256sums = cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
 
 pkgname = buildifier-bin

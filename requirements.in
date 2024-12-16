@@ -2,4 +2,3 @@ pyalpm==0.10.6
 pyelftools==0.31
 setuptools==75.6.0
 license-expression==30.4.0
-git+https://gitlab.archlinux.org/pacman/namcap.git@3.5.2

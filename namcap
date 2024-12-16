@@ -2,12 +2,7 @@
 set -eo pipefail
 
 uv venv
-uv pip install \
-  pyalpm==0.10.6 \
-  pyelftools==0.31 \
-  setuptools==75.6.0 \
-  license-expression==30.4.0
-uv pip install --no-build-isolation git+https://gitlab.archlinux.org/pacman/namcap.git@3.5.2
+uv pip install --no-build-isolation-package=namcap -r requirements.txt
 
 SITE_PACKAGES="$(uv run python -c 'import site; print(site.getsitepackages()[0])')"
 PARSE_PKGBUILD_PATH="$SITE_PACKAGES/usr/share/namcap" \

@@ -19,5 +19,5 @@ jobs:
           cache-dependency-glob: "requirements**.txt"
       - uses: daaku/gh-action-apt-install@v4
         with:
-          packages: libalpm13
+          packages: libalpm-dev
       - run: ./namcap

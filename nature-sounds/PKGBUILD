@@ -1,0 +1,21 @@
+pkgname=nature-sounds
+pkgver=0.1.2
+pkgrel=1
+pkgdesc='A lightweight, nature sounds player for the command-line.'
+arch=('x86_64' 'aarch64')
+url='https://github.com/jmelahman/nature-sounds'
+license=('MIT')
+depends=('alsa-utils')
+makedepends=('go')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('bcb279b1eaa150da8e68a1344d9c97bd1067c012f3f2f3ee9ed6a53aa530dfe9')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    go build -ldflags="-X main.version=v$pkgver -s -w" -o "$pkgname"
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+}

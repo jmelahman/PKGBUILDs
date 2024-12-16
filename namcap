@@ -1,13 +1,3 @@
-#!/usr/bin/env bash
-set -eo pipefail
-
-uv venv
-uv pip install -r requirements.txt
-uv pip install --no-build-isolation git+https://gitlab.archlinux.org/pacman/namcap.git@3.5.2
-
-SITE_PACKAGES="$(uv run python -c 'import site; print(site.getsitepackages()[0])')"
-PARSE_PKGBUILD_PATH="$SITE_PACKAGES/usr/share/namcap" \
-  uv run namcap \
-  -i \
-  -t "$SITE_PACKAGES/usr/share/namcap/namcap-tags" \
-  **/PKGBUILD
+#!/usr/bin/env sh
+docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/namcap:v3.5.2 \
+  namcap -i **/PKGBUILD

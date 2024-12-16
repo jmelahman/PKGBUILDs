@@ -10,14 +10,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: ./shellcheck
   namcap:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-        with:
-          enable-cache: true
-          cache-dependency-glob: "requirements**.txt"
-      - uses: daaku/gh-action-apt-install@v4
-        with:
-          packages: libalpm-dev libalpm13
       - run: ./namcap

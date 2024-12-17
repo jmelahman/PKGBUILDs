@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+import argparse
 import json
 import re
 import subprocess
@@ -50,10 +50,16 @@ def process_package(package: Package) -> None:
     print(f"Bump {package.name} from v{current_version} to {package.version}")
 
 def main():
+    parser = argparse.ArgumentParser(description="Process package version updates")
+    parser.add_argument("package", help="The name of the package to process")
+    args = parser.parse_args()
+
     lines = run_nvchecker()
     packages = parse_nvchecker_output(lines)
 
-    for package in packages:
+    package = next((p for p in packages if p.name == args.package), None)
+
+    if package:
         process_package(package)
 
 if __name__ == "__main__":

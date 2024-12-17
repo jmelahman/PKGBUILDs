@@ -7,3 +7,8 @@ use_latest_release = true
 source = "github"
 github = "jmelahman/work"
 use_latest_release = true
+
+[ripsecrets]
+source = "github"
+github = "sirwart/ripsecrets"
+use_latest_release = true

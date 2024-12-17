@@ -15,10 +15,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           force-depth: 0
-          persist-credentials: false
+          persist-credentials: true
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - run: docker run --user packager --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest ./pkgreleaser.py
+      - run: |
+          for dir in **/; do
+            MESSAGE=$(
+              docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
+                bash -c "chown packager -R . && su packager -c ./pkgreleaser.py && chown root -R ."
+            )
+            if [ -n "$MESSAGE" ]; then
+              BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"
+              git checkout -b "$BRANCH" origin/master
+              git commit -am "$MESSAGE"
+              git push -u origin "$BRANCH"
+              gh pr create --base master --head "$BRANCH" --tile "$MESSAGE"
+            fi
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

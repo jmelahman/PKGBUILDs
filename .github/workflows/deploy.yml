@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-permissions: false
+          persist-permissions: true
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:

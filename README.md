@@ -4,25 +4,21 @@
 
 ## Managing packages
 
+Each package is managed as a git [subtree](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_subtree_merge).
+Changes are automatically pushed upstream on commit.
+
 ### Adding a new package
 
 ```shell
 git subtree add --prefix=$PACKAGE ssh://aur@aur.archlinux.org/$PACKAGE.git master
 ```
 
-### Updating a package
-
-```shell
-git subtree push --prefix=$PACKAGE ssh://aur@aur.archlinux.org/$PACKAGE.git master
-```
-
 ## Running tests
 
-All that is required to run tests is [docker](https://docs.docker.com/engine).
 As recommended by the [Arch Wiki](https://wiki.archlinux.org/title/PKGBUILD), `namcap` and
-`shellcheck` are configured to check the `PKGBUILD`s.
+`shellcheck` are configured to check the PKGBUILDs.
 
-Each can be ran respectively,
+Each can be ran with the following commands,
 
 ```shell
 ./shellcheck

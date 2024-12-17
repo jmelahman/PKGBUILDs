@@ -1,4 +1,4 @@
-[natures-sounds]
+[nature-sounds]
 source = "github"
 github = "jmelahman/nature-sounds"
 use_latest_release = true

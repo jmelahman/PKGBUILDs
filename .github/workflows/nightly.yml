@@ -19,6 +19,6 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - run: docker run --user packager --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvcheker:v2.16 ./pkgreleaser.py
+      - run: docker run --user packager --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest ./pkgreleaser.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

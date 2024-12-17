@@ -23,7 +23,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: |
-          set -x
           for dir in **/; do
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \

@@ -9,6 +9,7 @@ from typing import NamedTuple
 class Package(NamedTuple):
     name: str
     version: str
+    revision: str
 
 def run_nvchecker() -> list[str]:
     result = subprocess.check_output(
@@ -21,7 +22,9 @@ def parse_nvchecker_output(lines: list[str]) -> list[Package]:
     nv_data = []
     for line in lines:
         data = json.loads(line)
-        nv_data.append(Package(name=data["name"], version=(data["version"])))
+        nv_data.append(
+            Package(name=data["name"], version=data["version"], revision=data["revision"])
+        )
     return nv_data
 
 def process_package(package: Package) -> None:
@@ -45,6 +48,7 @@ def process_package(package: Package) -> None:
         return
 
     updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={latest_version}", content)
+    updated_content = re.sub(r"(?m)^_commit=(.+)$", f"_commit='{package.revision}'", updated_content)
     pkgbuild_path.write_text(updated_content)
     with srcinfo_path.open(mode="w") as f:
         subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)

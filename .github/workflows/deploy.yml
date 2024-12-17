@@ -18,14 +18,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #- name: Add known hosts
-      #  run: |
-      #    mkdir -p ~/.ssh
-      #    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+      - name: Add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts
 
       - name: Push to remote repository
         run: |
           for dir in **/; do
             PACKAGE="${dir///}"
-            git subtree push --prefix=$PACKAGE ssh://aur@aur.archlinux.org/$PACKAGE.git master
+            GIT_SSH_COMMAND='ssh -vvv' git subtree push --prefix=$PACKAGE ssh://aur@aur.archlinux.org/$PACKAGE.git master
           done

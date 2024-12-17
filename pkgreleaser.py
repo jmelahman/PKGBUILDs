@@ -48,7 +48,8 @@ def process_package(package: Package) -> None:
     pkgbuild_path.write_text(updated_content)
     with srcinfo_path.open(mode="w") as f:
         subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
-    subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
+    # TODO: Conditionally use this when not skip.
+    # subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
 
     print(f"Bump {package.name} from v{current_version} to {package.version}")
 

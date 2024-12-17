@@ -1,0 +1,24 @@
+name: Nightly Updates
+
+#on:
+#  schedule:
+#    - cron: "0 8 * * *"
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run-command:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          force-depth: 0
+          persist-credentials: false
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - run: ./pkgreleaser.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

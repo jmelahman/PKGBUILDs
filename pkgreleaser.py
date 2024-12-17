@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import datetime
 import json
 import re
 import subprocess
@@ -48,6 +49,15 @@ def process_package(package: Package) -> None:
     updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={latest_version}", content)
     pkgbuild_path.write_text(updated_content)
     subprocess.check_call(["updpkgsums"], cwd=dir_path)
+
+    message = f"Bump {package.name} from {current_version} to {package.version}"
+    branch = f"pkgrelease/{package.name}-{package.version}"
+    subprocess.check_call(["git", "checkout", "-b", branch])
+    subprocess.check_call(["git", "commit", "-am", message])
+    subprocess.check_call(["git", "push", "-u", "origin", f"HEAD:{branch}"])
+    subprocess.check_call(
+        ["gh", "pr", "create", "--base", "main", "--head", branch, "--title", message]
+    )
 
 def main():
     lines = run_nvchecker()

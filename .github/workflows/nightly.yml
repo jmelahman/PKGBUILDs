@@ -24,7 +24,7 @@ jobs:
           for dir in **/; do
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
-                bash -c "chown packager -R . && su packager -c ./pkgreleaser.py ${dir///} && chown root -R ."
+                bash -c "chown packager -R . && su packager -c './pkgreleaser.py ${dir///}' && chown root -R ."
             )
             if [ -n "$MESSAGE" ]; then
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"

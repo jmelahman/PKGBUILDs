@@ -33,7 +33,7 @@ jobs:
               git checkout -b "$BRANCH" origin/master
               git commit -am "$MESSAGE"
               git push -u origin "$BRANCH"
-              gh pr create --base master --head "$BRANCH" --tile "$MESSAGE"
+              gh pr create --base master --head "$BRANCH" --title "$MESSAGE"
             fi
           done
         env:

@@ -5,7 +5,10 @@
 ## Managing packages
 
 Each package is managed as a git [subtree](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_subtree_merge).
-Changes are automatically pushed upstream on commit.
+Changes are automatically pushed to the AUR on commits to master.
+
+[nvchecker](https://github.com/lilydjwg/nvchecker) is used to check upstream repositories for new versions nightly.
+Pull requests to update versions are generated at midnight (PST).
 
 ### Adding a new package
 

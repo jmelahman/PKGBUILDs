@@ -1,0 +1,9 @@
+[natures-sounds]
+source = "github"
+github = "jmelahman/nature-sounds"
+use_latest_release = true
+
+[work]
+source = "github"
+github = "jmelahman/work"
+use_latest_release = true

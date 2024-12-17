@@ -32,8 +32,8 @@ jobs:
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"
               git checkout -b "$BRANCH" origin/master
               git commit -am "$MESSAGE"
-              git push -u origin "$BRANCH"
-              gh pr create --base master --head "$BRANCH" --title "$MESSAGE"
+              git push -f -u origin "$BRANCH"
+              gh pr create --base master --head "$BRANCH" --fill
             fi
           done
         env:

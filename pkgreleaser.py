@@ -12,11 +12,21 @@ class Package(NamedTuple):
     revision: str
 
 def run_nvchecker() -> list[str]:
-    result = subprocess.check_output(
-        ["nvchecker", "--logger=json", "-c", "nvchecker.toml"],
+    result = subprocess.run(
+        [
+            "uv",
+            "run",
+            "--with=git+https://github.com/lilydjwg/nvchecker@372fce4445159ebd2cab8dab4f3e40e20a54ee9a",
+            "nvchecker",
+            "--logger=json",
+            "-c",
+            "nvchecker.toml"
+        ],
+        check=True,
         text=True,
+        capture_output=True,
     )
-    return result.splitlines()
+    return result.stdout.splitlines()
 
 def parse_nvchecker_output(lines: list[str]) -> list[Package]:
     nv_data = []
@@ -28,8 +38,6 @@ def parse_nvchecker_output(lines: list[str]) -> list[Package]:
     return nv_data
 
 def process_package(package: Package) -> None:
-    latest_version = package.version.lstrip("v")
-
     dir_path = Path(package.name)
     pkgbuild_path = dir_path / "PKGBUILD"
     srcinfo_path = dir_path / ".SRCINFO"
@@ -44,10 +52,10 @@ def process_package(package: Package) -> None:
 
     current_version = match.group(1).strip()
 
-    if current_version == latest_version:
+    if current_version == package.version:
         return
 
-    updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={latest_version}", content)
+    updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={package.version}", content)
     updated_content = re.sub(r"(?m)^_commit=(.+)$", f"_commit='{package.revision}'", updated_content)
     pkgbuild_path.write_text(updated_content)
     with srcinfo_path.open(mode="w") as f:
@@ -55,7 +63,7 @@ def process_package(package: Package) -> None:
     # TODO: Conditionally use this when not skip.
     # subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
 
-    print(f"Bump {package.name} from v{current_version} to {package.version}")
+    print(f"Bump {package.name} from {current_version} to {package.version}")
 
 def main():
     parser = argparse.ArgumentParser(description="Process package version updates")

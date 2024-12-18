@@ -20,9 +20,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: |
           for dir in **/; do
+            [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
-                bash -c "chown packager -R $dir && su packager -c './pkgreleaser.py ${dir///}' && chown root -R $dir"
+                bash -v "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown root -R \"$dir\""
             )
             if [ -n "$MESSAGE" ]; then
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"

@@ -27,6 +27,7 @@ jobs:
       - name: Push to remote repository
         run: |
           for dir in **/; do
+            [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             PACKAGE="${dir///}"
-            git subtree push --prefix=$PACKAGE ssh://aur@aur.archlinux.org/$PACKAGE.git master
+            git subtree push "--prefix=$PACKAGE" "ssh://aur@aur.archlinux.org/$PACKAGE.git" master
           done

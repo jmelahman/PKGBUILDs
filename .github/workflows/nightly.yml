@@ -3,6 +3,9 @@ name: Nightly Updates
 on:
   schedule:
     - cron: "0 8 * * *"
+  push:
+    branches:
+      - master
 
 jobs:
   run-command:

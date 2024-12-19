@@ -16,7 +16,7 @@ def run_nvchecker() -> list[str]:
         [
             "uv",
             "run",
-            "--with=git+https://github.com/lilydjwg/nvchecker@372fce4445159ebd2cab8dab4f3e40e20a54ee9a",
+            "--with=git+https://github.com/lilydjwg/nvchecker@2722ccc7fef71fccf9f031d8299bc3c36736fdda",
             "nvchecker",
             "--logger=json",
             "-c",

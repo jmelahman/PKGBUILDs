@@ -1,3 +1,9 @@
+[connections]
+source = "github"
+github = "jmelahman/connections"
+use_max_tag = true
+prefix = "v"
+
 [check-symlinks]
 source = "github"
 github = "jmelahman/check-symlinks"

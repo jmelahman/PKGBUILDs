@@ -23,7 +23,7 @@ jobs:
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
-                bash -v "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown root -R \"$dir\""
+                bash -c "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown root -R \"$dir\""
             )
             if [ -n "$MESSAGE" ]; then
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"

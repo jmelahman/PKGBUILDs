@@ -56,6 +56,7 @@ def process_package(package: Package) -> None:
         return
 
     updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={package.version}", content)
+    updated_content = re.sub(r"(?m)^pkgrel=(.+)$", f"pkgrel=1", updated_content)
     updated_content = re.sub(r"(?m)^_commit=(.+)$", f"_commit='{package.revision}'", updated_content)
     pkgbuild_path.write_text(updated_content)
     with srcinfo_path.open(mode="w") as f:

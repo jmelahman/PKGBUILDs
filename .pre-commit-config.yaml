@@ -2,26 +2,31 @@ repos:
   - repo: local
     hooks:
       - id: check-symlinks
+        name: check-symlinks
         entry: ./build check-symlinks
         language: system
         files: ^check-symlinks/PKGBUILD$
         pass_filenames: false
       - id: connections
+        name: connections
         entry: ./build connections
         language: system
         files: ^connections/PKGBUILD$
         pass_filenames: false
       - id: nature-sounds
+        name: nature-sounds
         entry: ./build nature-sounds
         language: system
         files: ^nature-sounds/PKGBUILD$
         pass_filenames: false
       - id: ripsecrets
+        name: ripsecrets
         entry: ./build ripsecrets
         language: system
         files: ^ripsecrets/PKGBUILD$
         pass_filenames: false
       - id: work
+        name: work
         entry: ./build work
         language: system
         files: ^work/PKGBUILD$

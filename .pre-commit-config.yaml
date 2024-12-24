@@ -37,6 +37,12 @@ repos:
         language: system
         files: ^connections/PKGBUILD$
         pass_filenames: false
+      - id: ibazel
+        name: ibazel
+        entry: ./build ibazel
+        language: system
+        files: ^ibazel/PKGBUILD$
+        pass_filenames: false
       - id: nature-sounds
         name: nature-sounds
         entry: ./build nature-sounds

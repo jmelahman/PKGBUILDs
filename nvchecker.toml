@@ -34,9 +34,9 @@ github = "jmelahman/check-symlinks"
 use_max_tag = true
 prefix = "v"
 
-[nature-sounds]
+[ibazel]
 source = "github"
-github = "jmelahman/nature-sounds"
+github = "bazelbuild/bazel-watcher"
 use_max_tag = true
 prefix = "v"
 

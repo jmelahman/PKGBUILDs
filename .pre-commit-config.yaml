@@ -1,6 +1,18 @@
 repos:
   - repo: local
     hooks:
+      - id: buildifier-bin
+        name: buildifier-bin
+        entry: ./build buildifier-bin
+        language: system
+        files: ^buildifier-bin/PKGBUILD$
+        pass_filenames: false
+      - id: buildozer-bin
+        name: buildozer-bin
+        entry: ./build buildozer-bin
+        language: system
+        files: ^buildozer-bin/PKGBUILD$
+        pass_filenames: false
       - id: check-symlinks
         name: check-symlinks
         entry: ./build check-symlinks

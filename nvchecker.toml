@@ -1,3 +1,15 @@
+[buildifier-bin]
+source = "github"
+github = "bazelbuild/buildifier-bin"
+use_max_tag = true
+prefix = "v"
+
+[buildozer-bin]
+source = "github"
+github = "bazelbuild/buildozer-bin"
+use_max_tag = true
+prefix = "v"
+
 [connections]
 source = "github"
 github = "jmelahman/connections"

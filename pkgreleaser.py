@@ -61,9 +61,9 @@ def process_package(package: Package) -> None:
     pkgbuild_path.write_text(updated_content)
     with srcinfo_path.open(mode="w") as f:
         subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
-    # TODO: Conditionally use this when not skip.
-    # TODO: if "makepkg -g" is sufficient and avoids depending on pacman-contrib, prefer that.
-    # subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
+
+    if "md5sums=('SKIP')" not in updated_content:
+        subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
 
     print(f"Bump {package.name} from {current_version} to {package.version}")
 

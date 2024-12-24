@@ -8,7 +8,6 @@ DIR=$1
 docker run \
   --rm \
   -v "$PWD":"/mnt" \
-  -v "$HOME/.bazelrc":"/home/builder/.bazelrc" \
   -w /mnt \
   lahmanja/archlinux:latest \
   bash -c "pacman -Sy && chown builder -R ${DIR} && su builder -c 'cd ${DIR} && yes | makepkg -Csi' && chown root -R ${DIR}"

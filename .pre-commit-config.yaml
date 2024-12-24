@@ -13,6 +13,12 @@ repos:
         language: system
         files: ^buildifier-bin/PKGBUILD$
         pass_filenames: false
+      - id: buildozer
+        name: buildozer
+        entry: ./build buildozer
+        language: system
+        files: ^buildozer/PKGBUILD$
+        pass_filenames: false
       - id: buildozer-bin
         name: buildozer-bin
         entry: ./build buildozer-bin

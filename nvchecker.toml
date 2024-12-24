@@ -10,6 +10,12 @@ github = "bazelbuild/buildtools"
 use_max_tag = true
 prefix = "v"
 
+[buildozer]
+source = "github"
+github = "bazelbuild/buildtools"
+use_max_tag = true
+prefix = "v"
+
 [buildozer-bin]
 source = "github"
 github = "bazelbuild/buildtools"

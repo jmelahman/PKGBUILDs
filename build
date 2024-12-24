@@ -10,5 +10,5 @@ docker run \
   -v "$PWD":"/mnt" \
   -w /mnt \
   lahmanja/archlinux:latest \
-  bash -c "chown builder -R ${DIR} && su builder -c 'cd ${DIR} && yes | makepkg -Csi' && chown root -R ${DIR}"
+  bash -c "pacman -Sy && chown builder -R ${DIR} && su builder -c 'cd ${DIR} && yes | makepkg -Csi' && chown root -R ${DIR}"
 

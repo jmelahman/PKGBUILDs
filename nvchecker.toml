@@ -1,3 +1,9 @@
+[buildifier]
+source = "github"
+github = "bazelbuild/buildtools"
+use_max_tag = true
+prefix = "v"
+
 [buildifier-bin]
 source = "github"
 github = "bazelbuild/buildtools"

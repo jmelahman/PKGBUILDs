@@ -62,7 +62,7 @@ def process_package(package: Package) -> None:
     with srcinfo_path.open(mode="w") as f:
         subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
 
-    if "md5sums=('SKIP')" not in updated_content:
+    if "sums=('SKIP')" not in updated_content:
         subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
 
     print(f"Bump {package.name} from {current_version} to {package.version}")

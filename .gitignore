@@ -9,5 +9,11 @@
 *.log.*
 *.sig
 
+**/*
+!**/PKGBUILD
+!**/README.md
+!**/.SRCINFO
+!**/*.patch
+
 pkg/
 src/

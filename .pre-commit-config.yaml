@@ -37,6 +37,12 @@ repos:
         language: system
         files: ^connections/PKGBUILD$
         pass_filenames: false
+      - id: ibazel-bin
+        name: ibazel-bin
+        entry: ./build ibazel-bin
+        language: system
+        files: ^ibazel-bin/PKGBUILD$
+        pass_filenames: false
       - id: ibazel
         name: ibazel
         entry: ./build ibazel

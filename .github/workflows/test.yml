@@ -1,11 +1,10 @@
 name: Tests
+
 on:
-  pull_request:
-    types:
-      - opened
   push:
     branches:
       - master
+  pull_request:
 
 jobs:
   pre-commit:

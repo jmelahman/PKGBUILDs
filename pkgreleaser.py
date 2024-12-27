@@ -12,13 +12,15 @@ class Package(NamedTuple):
     version: str
     revision: str
 
-def run_nvchecker() -> list[str]:
+def run_nvchecker(entry: str) -> list[str]:
     result = subprocess.run(
         [
             "uv",
             "run",
             "--with=git+https://github.com/lilydjwg/nvchecker@2722ccc7fef71fccf9f031d8299bc3c36736fdda",
             "nvchecker",
+            "--entry",
+            entry,
             "--logger=json",
             "-c",
             "nvchecker.toml"
@@ -79,7 +81,7 @@ def main():
     parser.add_argument("package", type=_directory, help="The name of the package to process")
     args = parser.parse_args()
 
-    lines = run_nvchecker()
+    lines = run_nvchecker(args.package)
     packages = parse_nvchecker_output(lines)
 
     package = next((p for p in packages if p.name == args.package), None)

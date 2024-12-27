@@ -21,7 +21,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
         with:
           extra_args: --files $(git diff origin/master HEAD --name-only | tr '\n' ' ')
-  postsubtit:
+  postsubmit:
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'master' }}
     steps:

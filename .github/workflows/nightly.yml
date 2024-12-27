@@ -29,11 +29,13 @@ jobs:
                 bash -c "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown root -R \"$dir\""
             )
             if [ -n "$MESSAGE" ]; then
+              ls -alh
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"
               git checkout -b "$BRANCH" origin/master
               git commit -am "$MESSAGE"
               git push -f -u origin "$BRANCH"
               gh pr create --base master --head "$BRANCH" --fill
+              git reset --hard origin/master
             fi
           done
         env:

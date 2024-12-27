@@ -10,6 +10,8 @@ on:
 jobs:
   run-command:
     runs-on: ubuntu-latest
+    environment:
+      name: release
     permissions:
       contents: write
       pull-requests: write
@@ -22,7 +24,7 @@ jobs:
       # https://github.com/orgs/community/discussions/65321#discussioncomment-8003574
       - uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

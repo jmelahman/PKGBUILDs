@@ -37,6 +37,7 @@ jobs:
               git commit -am "$MESSAGE"
               git push -f -u origin "$BRANCH"
               gh pr create --base master --head "$BRANCH" --fill
+              gh workflow run test.yml --ref "$BRANCH"
             fi
           done
         env:

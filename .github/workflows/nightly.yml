@@ -26,16 +26,14 @@ jobs:
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
-                bash -c "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown root -R \"$dir\""
+                bash -c "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""
             )
             if [ -n "$MESSAGE" ]; then
-              ls -alh
               BRANCH="pkgreleaser/${dir}$(date +'%Y-%m-%d')"
               git checkout -b "$BRANCH" origin/master
               git commit -am "$MESSAGE"
               git push -f -u origin "$BRANCH"
               gh pr create --base master --head "$BRANCH" --fill
-              git reset --hard origin/master
             fi
           done
         env:

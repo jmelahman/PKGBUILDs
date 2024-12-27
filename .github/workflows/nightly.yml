@@ -10,7 +10,6 @@ on:
 jobs:
   run-command:
     runs-on: ubuntu-latest
-    container: lahmanja/nvchecker:latest
     permissions:
       contents: write
       pull-requests: write
@@ -25,7 +24,10 @@ jobs:
       - run: |
           for dir in **/; do
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
-            MESSAGE="$(./pkgreleaser.py "${dir///}")"
+            MESSAGE=$(
+              docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:latest \
+                bash -c "chown packager -R \"$dir\" && su packager -c './pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""
+            )
             if [ -n "$MESSAGE" ]; then
               BRANCH="pkgreleaser/${dir}$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$')"
               if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then

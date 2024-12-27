@@ -55,6 +55,12 @@ repos:
         language: system
         files: ^nature-sounds/PKGBUILD$
         pass_filenames: false
+      - id: release-tag
+        name: release-tag
+        entry: ./build release-tag
+        language: system
+        files: ^release-tag/PKGBUILD$
+        pass_filenames: false
       - id: ripsecrets
         name: ripsecrets
         entry: ./build ripsecrets

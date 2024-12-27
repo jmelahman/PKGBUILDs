@@ -52,6 +52,12 @@ github = "sirwart/ripsecrets"
 use_max_tag = true
 prefix = "v"
 
+[release-tag]
+source = "github"
+github = "jmelahman/tag"
+use_max_tag = true
+prefix = "v"
+
 [work]
 source = "github"
 github = "jmelahman/work"

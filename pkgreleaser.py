@@ -3,6 +3,7 @@ import argparse
 import json
 import re
 import subprocess
+import os
 from pathlib import Path
 from typing import NamedTuple
 
@@ -67,9 +68,15 @@ def process_package(package: Package) -> None:
 
     print(f"Bump {package.name} from {current_version} to {package.version}")
 
+def _directory(value):
+    if not os.path.isdir(value):
+        raise argparse.ArgumentTypeError(f"'{value}' is not a valid directory path.")
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description="Process package version updates")
-    parser.add_argument("package", help="The name of the package to process")
+    parser.add_argument("package", type=_directory, help="The name of the package to process")
     args = parser.parse_args()
 
     lines = run_nvchecker()

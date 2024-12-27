@@ -46,6 +46,12 @@ github = "bazelbuild/bazel-watcher"
 use_max_tag = true
 prefix = "v"
 
+[nature-sounds]
+source = "github"
+github = "jmelahman/nature-sounds"
+use_max_tag = true
+prefix = "v"
+
 [ripsecrets]
 source = "github"
 github = "sirwart/ripsecrets"

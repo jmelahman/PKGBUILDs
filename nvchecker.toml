@@ -1,3 +1,9 @@
+[aligo]
+source = "github"
+github = "essentialkaos/aligo"
+use_max_tag = true
+prefix = "v"
+
 [buildifier]
 source = "github"
 github = "bazelbuild/buildtools"

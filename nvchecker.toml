@@ -40,6 +40,12 @@ github = "jmelahman/check-symlinks"
 use_max_tag = true
 prefix = "v"
 
+[git-orchard]
+source = "github"
+github = "jmelahman/git-orchard"
+use_max_tag = true
+prefix = "v"
+
 [ibazel]
 source = "github"
 github = "bazelbuild/bazel-watcher"

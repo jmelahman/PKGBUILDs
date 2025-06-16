@@ -2,7 +2,7 @@
 # Contributor:
 
 pkgname=check-symlinks
-pkgver=0.4.2
+pkgver=0.5.1
 pkgrel=1
 pkgdesc='Check for broken symlinks'
 arch=('x86_64')
@@ -10,7 +10,7 @@ url='https://github.com/jmelahman/check-symlinks'
 license=('MIT')
 depends=('gcc-libs')
 makedepends=('git' 'rust')
-_commit='20c9a595ead56fb701182ed31c8ce120f7c3c9bb'
+_commit='f75ca4368d56917e2a246fda2520b5d983ab992d'
 source=("$pkgname::git+$url.git#commit=$_commit")
 md5sums=('SKIP')
 

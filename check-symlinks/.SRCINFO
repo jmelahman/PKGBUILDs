@@ -1,6 +1,6 @@
 pkgbase = check-symlinks
 	pkgdesc = Check for broken symlinks
-	pkgver = 0.4.2
+	pkgver = 0.5.1
 	pkgrel = 1
 	url = https://github.com/jmelahman/check-symlinks
 	arch = x86_64
@@ -8,7 +8,7 @@ pkgbase = check-symlinks
 	makedepends = git
 	makedepends = rust
 	depends = gcc-libs
-	source = check-symlinks::git+https://github.com/jmelahman/check-symlinks.git#commit=20c9a595ead56fb701182ed31c8ce120f7c3c9bb
+	source = check-symlinks::git+https://github.com/jmelahman/check-symlinks.git#commit=f75ca4368d56917e2a246fda2520b5d983ab992d
 	md5sums = SKIP
 
 pkgname = check-symlinks

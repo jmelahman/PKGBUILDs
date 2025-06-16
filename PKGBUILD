@@ -2,9 +2,9 @@
 # Contributor:
 
 pkgname=cycle-cli
-_pkgname=cycle-cli
+_pkgname=cycle
 pkgver=0.0.2
-pkgrel=1
+pkgrel=2
 pkgdesc='A command-line utility for indoor bike.'
 arch=('i686' 'x86_64' 'aarch64')
 url='https://github.com/jmelahman/cycle-cli'

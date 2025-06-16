@@ -4,10 +4,10 @@ pkgbase = check-symlinks
 	pkgrel = 1
 	url = https://github.com/jmelahman/check-symlinks
 	arch = x86_64
+	arch = aarch64
 	license = MIT
 	makedepends = git
-	makedepends = rust
-	depends = gcc-libs
+	makedepends = go
 	source = check-symlinks::git+https://github.com/jmelahman/check-symlinks.git#commit=f75ca4368d56917e2a246fda2520b5d983ab992d
 	md5sums = SKIP
 

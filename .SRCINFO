@@ -1,7 +1,7 @@
 pkgbase = python-dict2xml
 	pkgdesc = Small utility to convert a python dictionary into an XML string
-	pkgver = 1.7.6
-	pkgrel = 3
+	pkgver = 1.7.7
+	pkgrel = 1
 	url = https://github.com/delfick/python-dict2xml
 	arch = any
 	license = MIT
@@ -11,8 +11,8 @@ pkgbase = python-dict2xml
 	makedepends = python-hatchling
 	makedepends = python-installer
 	depends = python
-	source = https://files.pythonhosted.org/packages/source/d/dict2xml/dict2xml-1.7.6.tar.gz
-	sha256sums = 3e4811f4ef7fca86dede6acf382268ff9bc5735a4aa0e21b465f6eb0c4e81732
-	b2sums = 86ed48b2dc857efd58294c23f0708102ac66dab50e7f50ae149185f3fb707f72ef67008921ea641ed1bd96a91b25b39a92ddc796eadb64560ff29b82cd1ef07e
+	source = https://files.pythonhosted.org/packages/source/d/dict2xml/dict2xml-1.7.7.tar.gz
+	sha256sums = ae47873a584921430d3b74f0f63db98b59f6cafc038b14619c65e83cf717608f
+	b2sums = 9956e30eaa379209320f3e155549788dbe9cd156167dfec175a9a8e38d161fa2b5492508fb23861896dd716edb2f5bd98895f63e12e06f9c99eca09bfc01bd31
 
 pkgname = python-dict2xml

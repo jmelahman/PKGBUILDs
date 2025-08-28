@@ -67,6 +67,12 @@ repos:
         language: system
         files: ^python-blessings/PKGBUILD$
         pass_filenames: false
+      - id: python-dict2xml
+        name: python-dict2xml
+        entry: ./build python-dict2xml
+        language: system
+        files: ^python-dict2xml/PKGBUILD$
+        pass_filenames: false
       - id: release-tag
         name: release-tag
         entry: ./build release-tag

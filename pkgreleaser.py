@@ -21,7 +21,7 @@ def run_nvchecker(entry: str) -> list[str]:
         ["uvx", "nvchecker", "--entry", entry, "--logger=json", "-c", "nvchecker.toml"],
         check=True,
         text=True,
-        capture_output=True,
+        stdout=subprocess.PIPE,
     )
     return result.stdout.splitlines()
 
@@ -60,11 +60,13 @@ def process_package(package: Package) -> None:
         r"(?m)^_commit=(.+)$", f"_commit='{package.revision}'", updated_content
     )
     pkgbuild_path.write_text(updated_content)
-    with srcinfo_path.open(mode="w") as f:
-        subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
 
     if "sums=('SKIP')" not in updated_content:
-        subprocess.run(["updpkgsums"], check=True, capture_output=True, cwd=dir_path)
+        # TODO: Hint to the user if this is uninstalled it's from the 'pacman-contrib' package.
+        subprocess.run(["updpkgsums"], check=True, stdout=subprocess.DEVNULL, cwd=dir_path)
+
+    with srcinfo_path.open(mode="w") as f:
+        subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
 
     print(f"Bump {package.name} from {current_version} to {package.version}")
 

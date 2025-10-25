@@ -8,6 +8,7 @@ pkgbase = prek
 	checkdepends = cargo-nextest
 	makedepends = git
 	makedepends = rust
+	makedepends = libxml2
 	depends = gcc-libs
 	options = !lto
 	source = prek::git+https://github.com/j178/prek.git#commit=c2f0468b625ac6475536ac86b9f96b1c81933fdd

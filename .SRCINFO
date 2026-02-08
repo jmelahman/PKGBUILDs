@@ -1,0 +1,15 @@
+pkgbase = diny
+	pkgdesc = generate ai git commit messages
+	pkgver = 0.5.4
+	pkgrel = 1
+	url = https://github.com/dinoDanic/diny
+	arch = x86_64
+	arch = aarch64
+	license = unknown
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	source = git+https://github.com/dinoDanic/diny.git#tag=v0.5.4
+	sha256sums = SKIP
+
+pkgname = diny

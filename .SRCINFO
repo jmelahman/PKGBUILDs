@@ -1,12 +1,15 @@
 pkgbase = gvm
-	pkgdesc = Go Version Manager
-	pkgver = r617.6ecd46d
+	pkgdesc = A programming language version manager 🚀 🚀
+	pkgver = 0.1.0
 	pkgrel = 1
-	url = https://github.com/moovweb/gvm
-	arch = any
-	license = MIT
+	url = https://github.com/toodofun/gvm
+	arch = x86_64
+	arch = aarch64
+	license = unknown
+	makedepends = go
 	makedepends = git
-	depends = bash
+	depends = glibc
+	source = git+https://github.com/toodofun/gvm.git#tag=v0.1.0
+	sha256sums = SKIP
 
 pkgname = gvm
-

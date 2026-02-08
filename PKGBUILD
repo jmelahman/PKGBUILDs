@@ -1,31 +1,28 @@
-# Maintainer: Tyler Brock <tyler.brock@gmail.com>
+# Maintainer: gomanager <gomanager@generated>
 pkgname=saw
 pkgver=0.2.2
 pkgrel=1
-pkgdesc="Fast, multipurpose tool for AWS CloudWatch Logs"
-arch=('i686' 'x86_64' 'armv6h' 'armv7h')
-provides=('saw')
-url="https://github.com/TylerBrock/$pkgname"
-license=('MIT')
-makedepends=('go' 'git' 'dep')
-source=("https://github.com/TylerBrock/$pkgname/archive/v$pkgver.tar.gz")
-md5sums=('94cea15afeaddb185c8b5bb41c7cbf68')
-
-prepare() {
-  mkdir -p "${srcdir}/go/src/github.com/TylerBrock/"
-  mv "${srcdir}/${pkgname}-${pkgver}" "${srcdir}/go/src/github.com/TylerBrock/${pkgname}"
-}
+pkgdesc="Fast, multi-purpose tool for AWS CloudWatch Logs"
+arch=('x86_64' 'aarch64')
+url="https://github.com/TylerBrock/saw"
+license=('unknown')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/TylerBrock/saw.git#tag=v$pkgver")
+sha256sums=('SKIP')
 
 build() {
-  export GOPATH="${srcdir}/go"
-  export PATH="$PATH:$srcdir/go/bin"
-  cd "${srcdir}/go/src/github.com/TylerBrock/${pkgname}"
-  dep ensure
-  go build .
+  cd "$pkgname" || exit
+  go build \
+    -trimpath \
+    -ldflags='-s -w' \
+    -o $pkgname \
+    .
 }
 
 package() {
-  cd "${srcdir}/go/src/github.com/TylerBrock/${pkgname}"
-  install -Dm755 saw "${pkgdir}/usr/bin/${pkgname}"
-  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  cd "$pkgname" || exit
+  install -Dm 755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
 }

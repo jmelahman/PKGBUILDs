@@ -1,0 +1,30 @@
+# Maintainer: gomanager <gomanager@generated>
+pkgname=dockerfilegraph
+pkgver=0.19.3
+pkgrel=1
+pkgdesc="Visualize your multi-stage Dockerfiles"
+arch=('x86_64' 'aarch64')
+url="https://github.com/patrickhoefler/dockerfilegraph"
+license=('unknown')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/patrickhoefler/dockerfilegraph.git#tag=v$pkgver")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname" || exit
+  go build \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags='-s -w' \
+    -o $pkgname \
+    .
+}
+
+package() {
+  cd "$pkgname" || exit
+  install -Dm 755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

@@ -1,0 +1,30 @@
+# Maintainer: gomanager <gomanager@generated>
+pkgname=cert
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Cert is the Go tool to get TLS certificate information."
+arch=('x86_64' 'aarch64')
+url="https://github.com/genkiroid/cert"
+license=('unknown')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/genkiroid/cert.git#tag=$pkgver")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname" || exit
+  go build \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags='-s -w' \
+    -o $pkgname \
+    ./cmd/cert
+}
+
+package() {
+  cd "$pkgname" || exit
+  install -Dm 755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

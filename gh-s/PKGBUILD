@@ -1,0 +1,30 @@
+# Maintainer: gomanager <gomanager@generated>
+pkgname=gh-s
+pkgver=0.0.12
+pkgrel=1
+pkgdesc="🔎 search github repositories interactively"
+arch=('x86_64' 'aarch64')
+url="https://github.com/gennaro-tedesco/gh-s"
+license=('unknown')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/gennaro-tedesco/gh-s.git#tag=v$pkgver")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname" || exit
+  go build \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags='-s -w' \
+    -o $pkgname \
+    .
+}
+
+package() {
+  cd "$pkgname" || exit
+  install -Dm 755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

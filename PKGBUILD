@@ -1,26 +1,30 @@
-# Contributor: graysky
-
+# Maintainer: gomanager <gomanager@generated>
 pkgname=checkip
-pkgver=3.08
-pkgrel=2
-pkgdesc='Simple script that checks to see if your external IP address changed and if so sends an email with the new IP address.'
-arch=('any')
-url='https://github.com/graysky2/checkip'
-license=('MIT')
-depends=('curl' 'dnsutils' 'inetutils')
-optdepends=('mailsend: simple program to send mail via SMTP protocol'
-'s-nail: mail processing system with a command syntax reminiscent of ed'
-'heirloom-mailx: commandline utility for sending and receiving email')
-source=("http://repo-ck.com/source/$pkgname/$pkgname-$pkgver.tar.xz")
-sha256sums=('c358fccc6391567bdbe134e5e37fcaba5012bdf056b149a36127db72c31f67e4')
+pkgver=0.49.0
+pkgrel=1
+pkgdesc="Get (security) info about IP addresses"
+arch=('x86_64' 'aarch64')
+url="https://github.com/jreisinger/checkip"
+license=('unknown')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/jreisinger/checkip.git#tag=v$pkgver")
+sha256sums=('SKIP')
 
-build () {
-	cd "$pkgname-$pkgver"
-	make
+build() {
+  cd "$pkgname" || exit
+  go build \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags='-s -w' \
+    -o $pkgname \
+    .
 }
 
 package() {
-	cd "$pkgname-$pkgver"
-	make DESTDIR="$pkgdir/" install
-	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  cd "$pkgname" || exit
+  install -Dm 755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
 }

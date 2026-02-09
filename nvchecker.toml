@@ -281,7 +281,7 @@ prefix = "v"
 [gowebdav]
 source = "github"
 github = "studio-b12/gowebdav"
-use_max_tag = true
+use_max_release = true
 prefix = "v"
 
 [gowsdl]

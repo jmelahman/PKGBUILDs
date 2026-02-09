@@ -554,7 +554,7 @@ prefix = "v"
 [tabtoy]
 source = "github"
 github = "davyxu/tabtoy"
-use_max_tag = true
+use_max_release = true
 
 [tecli]
 source = "github"

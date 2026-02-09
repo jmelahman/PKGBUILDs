@@ -560,6 +560,8 @@ use_max_release = true
 source = "github"
 github = "awslabs/tecli"
 use_max_tag = true
+from_pattern = '-alpha$'
+to_pattern = ''
 
 [tfsort]
 source = "github"

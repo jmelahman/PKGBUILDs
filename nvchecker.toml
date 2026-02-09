@@ -347,7 +347,7 @@ prefix = "v"
 [iftree]
 source = "github"
 github = "t1anz0ng/iftree"
-use_max_tag = true
+use_max_release = true
 prefix = "v"
 
 [jaggr]

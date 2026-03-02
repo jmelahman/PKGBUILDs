@@ -25,8 +25,9 @@ class Package(NamedTuple):
 def run_nvchecker(entry: str) -> list[str]:
     result = subprocess.run(  # noqa: S603
         [
-            "uvx",
-            "--with=nvchecker[pypi]",
+            "uv",
+            "tool",
+            "run",
             "nvchecker",
             "--entry",
             ENTRY_TO_UPSTREAM.get(entry, entry),

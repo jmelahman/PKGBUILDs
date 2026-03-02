@@ -1,4 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "nvchecker[pypi]>=2.20",
+# ]
+# ///
 from __future__ import annotations
 
 import argparse
@@ -25,9 +31,8 @@ class Package(NamedTuple):
 def run_nvchecker(entry: str) -> list[str]:
     result = subprocess.run(  # noqa: S603
         [
-            "uv",
-            "tool",
-            "run",
+            "python",
+            "-m",
             "nvchecker",
             "--entry",
             ENTRY_TO_UPSTREAM.get(entry, entry),

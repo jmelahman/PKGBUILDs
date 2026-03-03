@@ -139,12 +139,6 @@ repos:
         language: system
         files: ^cycle-cli/PKGBUILD$
         pass_filenames: false
-      - id: diny
-        name: diny
-        entry: ./build diny
-        language: system
-        files: ^diny/PKGBUILD$
-        pass_filenames: false
       - id: docker-debug
         name: docker-debug
         entry: ./build docker-debug

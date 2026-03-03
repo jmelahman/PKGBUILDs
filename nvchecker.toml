@@ -135,12 +135,6 @@ github = "jmelahman/cycle-cli"
 use_max_tag = true
 prefix = "v"
 
-[diny]
-source = "github"
-github = "dinoDanic/diny"
-use_max_tag = true
-prefix = "v"
-
 [docker-debug]
 source = "github"
 github = "zeromake/docker-debug"

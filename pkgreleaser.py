@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 import re
 import subprocess
-import tempfile
 from typing import NamedTuple
 
 # AUR package name to upstream package name.
@@ -31,27 +30,21 @@ class Package(NamedTuple):
 
 
 def run_nvchecker(entry: str) -> list[str]:
-    cmd = [
-        "python",
-        "-m",
-        "nvchecker",
-        "--entry",
-        ENTRY_TO_UPSTREAM.get(entry, entry),
-        "--logger=json",
-        "-c",
-        "nvchecker.toml",
-    ]
-
-    token = os.environ.get("GITHUB_TOKEN")
-    if not token:
-        result = subprocess.run(cmd, check=True, text=True, stdout=subprocess.PIPE)  # noqa: S603
-        return result.stdout.splitlines()
-
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete_on_close=False) as f:
-        f.write(f'[keys]\n[keys.github]\ntoken = "{token}"\n')
-        f.close()
-        cmd.extend(["--keyfile", f.name])
-        result = subprocess.run(cmd, check=True, text=True, stdout=subprocess.PIPE)  # noqa: S603
+    result = subprocess.run(  # noqa: S603
+        [
+            "python",
+            "-m",
+            "nvchecker",
+            "--entry",
+            ENTRY_TO_UPSTREAM.get(entry, entry),
+            "--logger=json",
+            "-c",
+            "nvchecker.toml",
+        ],
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+    )
     return result.stdout.splitlines()
 
 

@@ -30,7 +30,7 @@ jobs:
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             echo "Checking package: ${dir///}"
             MESSAGE=$(
-              docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:2026-03-01 \
+              docker run --rm -v "$PWD:/mnt" -w "/mnt" -e GITHUB_TOKEN lahmanja/nvchecker:2026-03-01 \
                 bash -c "chown packager -R \"$dir\" && su packager -c 'python ./pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""
             )
             if [ -n "$MESSAGE" ]; then

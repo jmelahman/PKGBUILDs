@@ -1,4 +1,4 @@
-name: Nightly Updates
+name: Hourly Updates
 
 on:
   schedule:
@@ -12,7 +12,7 @@ jobs:
   run-command:
     runs-on: ubuntu-latest
     environment:
-      name: nightly
+      name: hourly
     permissions:
       contents: write
       pull-requests: write
@@ -29,6 +29,7 @@ jobs:
           for dir in **/; do
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             echo "Checking package: ${dir///}"
+            # NOTE: Spinning up a container each time may be slow, but it's a poor man's backoff.
             MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" -e GITHUB_TOKEN lahmanja/nvchecker:2026-03-01 \
                 bash -c "chown packager -R \"$dir\" && su packager -c 'python ./pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""

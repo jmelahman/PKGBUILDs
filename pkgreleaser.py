@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 from pathlib import Path
 import re
@@ -56,6 +57,9 @@ def parse_nvchecker_output(lines: list[str]) -> list[Package]:
     nv_data = []
     for line in lines:
         data = json.loads(line)
+        if "version" not in data:
+            logging.warning("Skipping entry without version: %s", data)
+            continue
         nv_data.append(
             Package(
                 name=UPSTREAM_TO_ENTRY.get(data["name"], data["name"]),

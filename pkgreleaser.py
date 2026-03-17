@@ -28,23 +28,28 @@ class Package(NamedTuple):
     revision: str
 
 
-def run_nvchecker(entry: str) -> list[str]:
+def run_nvchecker(entry: str | None = None) -> list[str]:
+    cmd = [
+        "python",
+        "-m",
+        "nvchecker",
+        "--logger=json",
+        "-c",
+        "nvchecker.toml",
+    ]
+    if entry:
+        cmd.extend(["--entry", ENTRY_TO_UPSTREAM.get(entry, entry)])
     result = subprocess.run(  # noqa: S603
-        [
-            "python",
-            "-m",
-            "nvchecker",
-            "--entry",
-            ENTRY_TO_UPSTREAM.get(entry, entry),
-            "--logger=json",
-            "-c",
-            "nvchecker.toml",
-        ],
+        cmd,
         check=True,
         text=True,
         stdout=subprocess.PIPE,
     )
     return result.stdout.splitlines()
+
+
+# Reverse mapping: upstream package name to AUR package name.
+UPSTREAM_TO_ENTRY = {v: k for k, v in ENTRY_TO_UPSTREAM.items()}
 
 
 def parse_nvchecker_output(lines: list[str]) -> list[Package]:
@@ -53,7 +58,7 @@ def parse_nvchecker_output(lines: list[str]) -> list[Package]:
         data = json.loads(line)
         nv_data.append(
             Package(
-                name=ENTRY_TO_UPSTREAM.get(data["name"]) or data["name"],
+                name=UPSTREAM_TO_ENTRY.get(data["name"], data["name"]),
                 version=data["version"],
                 revision=data["revision"],
             )
@@ -61,7 +66,7 @@ def parse_nvchecker_output(lines: list[str]) -> list[Package]:
     return nv_data
 
 
-def process_package(package: Package) -> None:
+def process_package(package: Package) -> dict | None:
     dir_path = Path(package.name)
     pkgbuild_path = dir_path / "PKGBUILD"
     srcinfo_path = dir_path / ".SRCINFO"
@@ -79,7 +84,7 @@ def process_package(package: Package) -> None:
     current_version = match.group(1).strip()
 
     if current_version == package.version:
-        return
+        return None
 
     updated_content = re.sub(r"(?m)^pkgver=(.+)$", f"pkgver={package.version}", content)
     updated_content = re.sub(r"(?m)^pkgrel=(.+)$", "pkgrel=1", updated_content)
@@ -95,7 +100,11 @@ def process_package(package: Package) -> None:
     with srcinfo_path.open(mode="w") as f:
         subprocess.run(["makepkg", "--printsrcinfo"], stdout=f, check=True, cwd=dir_path)
 
-    print(f"Bump {package.name} from {current_version} to {package.version}")
+    return {
+        "name": package.name,
+        "old_version": current_version,
+        "new_version": package.version,
+    }
 
 
 def _directory(value: str) -> str:
@@ -107,16 +116,32 @@ def _directory(value: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Process package version updates")
-    parser.add_argument("package", type=_directory, help="The name of the package to process")
+    parser.add_argument(
+        "package",
+        nargs="?",
+        type=_directory,
+        help="The name of the package to process (omit to process all)",
+    )
     args = parser.parse_args()
 
     lines = run_nvchecker(args.package)
     packages = parse_nvchecker_output(lines)
 
-    package = next((p for p in packages if p.name == args.package), None)
+    results = []
+    if args.package:
+        package = next((p for p in packages if p.name == args.package), None)
+        if package:
+            result = process_package(package)
+            if result:
+                results.append(result)
+    else:
+        for package in packages:
+            if Path(package.name).is_dir():
+                result = process_package(package)
+                if result:
+                    results.append(result)
 
-    if package:
-        process_package(package)
+    print(json.dumps(results))
 
 
 if __name__ == "__main__":

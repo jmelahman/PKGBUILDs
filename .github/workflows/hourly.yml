@@ -12,7 +12,7 @@ jobs:
   run-command:
     runs-on: ubuntu-latest
     environment:
-      name: hourly
+      name: nightly
     permissions:
       contents: write
       pull-requests: write
@@ -26,14 +26,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: |
+          FAILED=0
           for dir in **/; do
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             echo "Checking package: ${dir///}"
             # NOTE: Spinning up a container each time may be slow, but it's a poor man's backoff.
-            MESSAGE=$(
+            if ! MESSAGE=$(
               docker run --rm -v "$PWD:/mnt" -w "/mnt" -e GITHUB_TOKEN lahmanja/nvchecker:2026-03-01 \
                 bash -c "chown packager -R \"$dir\" && su packager -c 'python ./pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""
-            ) || true
+            ); then
+              echo "::error::docker run failed for ${dir///}"
+              FAILED=1
+              continue
+            fi
             if [ -n "$MESSAGE" ]; then
               BRANCH="pkgreleaser/${dir}$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$')"
               if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
@@ -46,5 +51,6 @@ jobs:
               gh pr merge --auto --squash "$BRANCH"
             fi
           done
+          exit "$FAILED"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}

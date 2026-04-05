@@ -1,7 +1,7 @@
 [agent-deck]
 source = "github"
 github = "asheshgoplani/agent-deck"
-use_max_tag = true
+use_max_release = true
 prefix = "v"
 
 [aligo]

@@ -32,15 +32,20 @@ jobs:
             echo "Checking package: ${dir///}"
             # NOTE: Spinning up a container each time may be slow, but it's a poor man's backoff.
             if ! MESSAGE=$(
-              docker run --rm -v "$PWD:/mnt" -w "/mnt" lahmanja/nvchecker:2026-03-01 \
-                bash -c "chown packager -R \"$dir\" && su packager -c 'python ./pkgreleaser.py \"${dir///}\"' && chown $(id -u) -R \"$dir\""
+              docker run --rm -v "$PWD:/mnt" -w "/mnt" -u "$(id -u):$(id -g)" lahmanja/nvchecker:2026-03-01 \
+                python ./pkgreleaser.py "${dir///}"
             ); then
               echo "::error::docker run failed for ${dir///}"
               FAILED=1
               continue
             fi
             if [ -n "$MESSAGE" ]; then
-              BRANCH="pkgreleaser/${dir}$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$')"
+              VERSION=$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$') || true
+              if [ -z "$VERSION" ]; then
+                echo "::warning::Could not extract version from: $MESSAGE"
+                continue
+              fi
+              BRANCH="pkgreleaser/${dir}${VERSION}"
               if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
                 continue
               fi

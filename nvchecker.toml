@@ -254,12 +254,6 @@ github = "osteele/gojekyll"
 use_max_tag = true
 prefix = "v"
 
-[gosuki]
-source = "github"
-github = "blob42/gosuki"
-use_max_release = true
-prefix = "v"
-
 [gotouch]
 source = "github"
 github = "denizgursoy/gotouch"

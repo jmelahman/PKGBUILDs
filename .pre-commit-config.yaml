@@ -253,12 +253,6 @@ repos:
         language: system
         files: ^gojekyll/PKGBUILD$
         pass_filenames: false
-      - id: gosuki
-        name: gosuki
-        entry: ./build gosuki
-        language: system
-        files: ^gosuki/PKGBUILD$
-        pass_filenames: false
       - id: gotouch
         name: gotouch
         entry: ./build gotouch

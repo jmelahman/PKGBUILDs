@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+  schedule:
+    # Nightly fallback in case the push-triggered deploy failed.
+    - cron: "25 4 * * *"
+  workflow_dispatch:
 
 permissions: {}
 
@@ -28,8 +32,13 @@ jobs:
 
       - name: Push to remote repository
         run: |
+          FAILED=0
           for dir in **/; do
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             PACKAGE="${dir///}"
-            git subtree push "--prefix=$PACKAGE" "ssh://aur@aur.archlinux.org/$PACKAGE.git" master
+            if ! git subtree push "--prefix=$PACKAGE" "ssh://aur@aur.archlinux.org/$PACKAGE.git" master; then
+              echo "::error::subtree push failed for $PACKAGE"
+              FAILED=1
+            fi
           done
+          exit "$FAILED"

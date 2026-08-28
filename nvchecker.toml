@@ -456,6 +456,12 @@ github = "maogou/pep-ebook"
 use_max_tag = true
 prefix = "v"
 
+[pkglint]
+source = "github"
+github = "jmelahman/pkglint"
+use_max_tag = true
+prefix = "v"
+
 [poutine]
 source = "github"
 github = "boostsecurityio/poutine"

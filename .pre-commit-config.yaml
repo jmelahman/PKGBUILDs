@@ -457,6 +457,12 @@ repos:
         language: system
         files: ^pep-ebook/PKGBUILD$
         pass_filenames: false
+      - id: pkglint
+        name: pkglint
+        entry: ./build pkglint
+        language: system
+        files: ^pkglint/PKGBUILD$
+        pass_filenames: false
       - id: poutine
         name: poutine
         entry: ./build poutine

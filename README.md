@@ -25,8 +25,10 @@ Verify the package will build in CI,
 
 ## Running tests
 
-As recommended by the [Arch Wiki](https://wiki.archlinux.org/title/PKGBUILD), `namcap` and
-`shellcheck` are configured to check the PKGBUILDs.
+As recommended by the [Arch Wiki](https://wiki.archlinux.org/title/PKGBUILD), `shellcheck` is
+configured to check the PKGBUILDs, along with
+[pkglint](https://github.com/jmelahman/pkglint) for source-integrity, hermeticity, and
+correctness checks.
 
 Each can be ran with the following commands,
 
@@ -35,5 +37,5 @@ Each can be ran with the following commands,
 ```
 
 ```shell
-./namcap
+prek run pkglint --all-files
 ```

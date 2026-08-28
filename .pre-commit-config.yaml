@@ -1,4 +1,8 @@
 repos:
+  - repo: https://github.com/jmelahman/pkglint
+    rev: 032d3942197b64cc4e6025928cf886440c3be999
+    hooks:
+      - id: pkglint
   - repo: local
     hooks:
       - id: agent-deck
@@ -457,8 +461,10 @@ repos:
         language: system
         files: ^pep-ebook/PKGBUILD$
         pass_filenames: false
-      - id: pkglint
-        name: pkglint
+      # id deviates from the dirname convention so `prek run pkglint` selects
+      # the pkglint linter hook, not this package build.
+      - id: pkglint-package
+        name: pkglint-package
         entry: ./build pkglint
         language: system
         files: ^pkglint/PKGBUILD$

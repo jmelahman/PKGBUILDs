@@ -20,7 +20,11 @@ prepare() {
 
 build() {
   export CGO_CPPFLAGS="${CPPFLAGS}"
-  export CGO_CFLAGS="${CFLAGS}"
+  # go-graphviz vendors graphviz's C sources and silences their warnings with
+  # `#cgo CFLAGS: -w`, which lands after ours and disables -Wformat. That makes
+  # Arch's -Werror=format-security fatal on a diagnostic about itself being
+  # ignored, so demote just that one back to a warning.
+  export CGO_CFLAGS="${CFLAGS} -Wno-error=format-security"
   export CGO_CXXFLAGS="${CXXFLAGS}"
   export CGO_LDFLAGS="${LDFLAGS}"
   cd "$pkgname" || exit

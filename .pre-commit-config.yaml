@@ -3,6 +3,7 @@ repos:
     rev: 032d3942197b64cc4e6025928cf886440c3be999
     hooks:
       - id: pkglint
+        args: ["--fail-on", "warn"]
   - repo: local
     hooks:
       - id: agent-deck

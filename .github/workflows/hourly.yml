@@ -8,6 +8,18 @@ on:
       - master
   workflow_dispatch:
 
+# This workflow pushes branches and opens PRs, so overlapping runs race each
+# other and hammer the nvchecker containers. Every push to master triggers it,
+# so a batch of merges can otherwise stampede dozens of concurrent runs.
+# cancel-in-progress is false deliberately: a run that is midway through
+# `git push` / `gh pr create` must be allowed to finish, or it can leave a
+# branch pushed with no PR behind it. GitHub keeps at most one pending run per
+# group and discards older pending ones, so the stampede collapses to a single
+# queued run without ever interrupting work in flight.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   run-command:
     runs-on: ubuntu-latest

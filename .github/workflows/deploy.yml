@@ -9,6 +9,14 @@ on:
     - cron: "25 4 * * *"
   workflow_dispatch:
 
+# Concurrent runs push the same subtrees to the same AUR repos and race, which
+# fails with "cannot lock ref" / "[rejected] (fetch first)". As with the hourly
+# workflow, cancel-in-progress stays false so a run midway through pushing 100+
+# subtrees is never interrupted partway.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 permissions: {}
 
 jobs:

@@ -27,10 +27,14 @@ prepare() {
 }
 
 build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
   cd "$pkgname" || exit
 
-  CGO_ENABLED=0 go build -trimpath -buildmode=pie -mod=readonly -modcacherw \
-    -ldflags="-X main.version=v$pkgver -s -w" -o "$pkgname"
+  go build -trimpath -buildmode=pie -mod=readonly -modcacherw \
+    -ldflags="-linkmode=external -X main.version=v$pkgver -s -w" -o "$pkgname"
 }
 
 package() {

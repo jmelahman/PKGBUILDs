@@ -39,10 +39,14 @@ build() {
 
   # The _cgo platforms pull in a C++ toolchain so the binary is linked
   # externally, which is required for the -z relro,now linker flags below.
+  # --linkopt (rather than gc_linkopts' -extldflags) is what lands
+  # --as-needed ahead of net's cgo -lresolv on the external link line, which
+  # is what makes the linker drop the unused libresolv.so.2 dependency.
   "${srcdir}/bazelisk-bin-${CARCH}-${_bazelisk_pkgver}" \
     build --config=release "${_platforms}" \
     --@io_bazel_rules_go//go/config:linkmode=pie \
     --@io_bazel_rules_go//go/config:gc_linkopts=-extldflags,-Wl,-znow,-extldflags,-Wl,-zrelro \
+    --linkopt=-Wl,--as-needed \
     "//cmd/${pkgname}"
 }
 

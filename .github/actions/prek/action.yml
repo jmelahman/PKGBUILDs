@@ -29,6 +29,13 @@ runs:
         set -eu
         useradd --create-home builder
         echo 'builder ALL=(ALL) NOPASSWD: /usr/bin/pacman' >/etc/sudoers.d/builder
+        # The stock makepkg.conf also builds a -debug split package for every
+        # package that ships a binary, and pkglint fails those on PB826: their
+        # build-id symlinks point into the base package, which pkglint resolves
+        # through the installed-package database -- where a package that was
+        # only just built never is. Nothing in a PKGBUILD can change that, so
+        # skip the debug packages instead.
+        echo 'OPTIONS+=(!debug)' >/etc/makepkg.conf.d/nodebug.conf
         chown -R builder: "$GITHUB_WORKSPACE"
 
     - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece

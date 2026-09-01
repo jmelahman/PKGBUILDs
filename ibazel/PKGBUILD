@@ -39,6 +39,7 @@ build() {
 
   "${srcdir}/bazelisk-bin-${CARCH}-${_bazelisk_pkgver}" \
     build --config=release "${_platforms}" \
+    --@io_bazel_rules_go//go/config:linkmode=pie \
     "//cmd/${pkgname}"
 }
 

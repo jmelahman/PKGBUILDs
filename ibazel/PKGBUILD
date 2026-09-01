@@ -32,14 +32,17 @@ build() {
   cd "${pkgname}" || exit
 
   if [ "${CARCH}" == "aarch64" ]; then
-    _platforms="--platforms=@io_bazel_rules_go//go/toolchain:linux_arm64"
+    _platforms="--platforms=@io_bazel_rules_go//go/toolchain:linux_arm64_cgo"
   else
-    _platforms="--platforms=@io_bazel_rules_go//go/toolchain:linux_amd64"
+    _platforms="--platforms=@io_bazel_rules_go//go/toolchain:linux_amd64_cgo"
   fi
 
+  # The _cgo platforms pull in a C++ toolchain so the binary is linked
+  # externally, which is required for the -z relro,now linker flags below.
   "${srcdir}/bazelisk-bin-${CARCH}-${_bazelisk_pkgver}" \
     build --config=release "${_platforms}" \
     --@io_bazel_rules_go//go/config:linkmode=pie \
+    --@io_bazel_rules_go//go/config:gc_linkopts=-extldflags,-Wl,-znow,-extldflags,-Wl,-zrelro \
     "//cmd/${pkgname}"
 }
 

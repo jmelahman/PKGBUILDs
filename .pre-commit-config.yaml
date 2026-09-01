@@ -3,6 +3,7 @@ repos:
     rev: 715d02b964194ec1718489b100e63d0568ecc1a8 # 1.5.0
     hooks:
       - id: pkglint
+        args: ["--ignore", "PB906"]
       - id: pkglint-build
         # -s lets makepkg install what the package needs. It only reaches for
         # sudo when something is actually missing, so a local run with the

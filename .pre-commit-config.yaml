@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/jmelahman/pkglint
-    rev: 715d02b964194ec1718489b100e63d0568ecc1a8 # 1.5.0
+    rev: 0eaa18c1ab81e59b5cf8bc59dea9c5fb779562f9 # 1.5.0
     hooks:
       - id: pkglint
         args: ["--ignore", "PB906"]
@@ -12,7 +12,31 @@ repos:
         args: ["--makepkg-arg=-s"]
         # Needs python-e3-core, which only exists in the AUR, so makepkg can
         # never resolve its dependencies from the official repositories.
-        exclude: ^python-e3-testsuite/
+        #
+        # The rest are handled by the scoped entries below, which waive a rule
+        # that cannot be satisfied. Built-package findings anchor to paths
+        # inside the archive rather than to a line of the PKGBUILD, so an
+        # in-file `# pkglint: ignore=` directive cannot reach them.
+        exclude: |
+          (?x)^(
+            python-e3-testsuite
+            |annas-mcp|ojosama
+            |buildifier-bin|buildozer-bin|ibazel-bin
+          )/
+      # Neither upstream ships a licence file, in the release archive or in the
+      # repository -- only an SPDX identifier in package metadata.
+      - id: pkglint-build
+        alias: pkglint-build-unlicensed
+        name: pkglint-build (upstream ships no licence text)
+        args: ["--makepkg-arg=-s", "--ignore=PB834"]
+        files: ^(annas-mcp|ojosama)/PKGBUILD$
+      # These package a prebuilt upstream release binary. It is not position
+      # independent and there is no build to add the flag to.
+      - id: pkglint-build
+        alias: pkglint-build-prebuilt
+        name: pkglint-build (prebuilt upstream binaries)
+        args: ["--makepkg-arg=-s", "--ignore=PB806"]
+        files: ^(buildifier-bin|buildozer-bin|ibazel-bin)/PKGBUILD$
   # shellcheck-py rather than koalaman's own hook: that one is a docker_image
   # hook, and CI runs the hooks inside a container, where there is no docker.
   - repo: https://github.com/shellcheck-py/shellcheck-py

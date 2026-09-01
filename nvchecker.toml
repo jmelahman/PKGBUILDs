@@ -450,6 +450,17 @@ github = "orangekame3/paclear"
 use_max_tag = true
 prefix = "v"
 
+[paintdotnet]
+source = "github"
+github = "paintdotnet/release"
+use_max_tag = true
+# The package tracks the 5.2 alpha channel, whose tags carry the four-part build
+# number pkgver uses (v5.2-alpha.5.200.9739.41506). Stable tags are plain
+# (v5.1.12) and would not sort against those meaningfully, so filter them out.
+include_regex = "v[0-9.]+-alpha\\..+"
+from_pattern = "^v[0-9.]+-alpha\\.(.+)$"
+to_pattern = "\\1"
+
 [pep-ebook]
 source = "github"
 github = "maogou/pep-ebook"

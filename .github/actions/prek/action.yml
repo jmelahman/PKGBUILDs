@@ -1,0 +1,48 @@
+name: Run prek
+description: Run every hook -- lint and build alike -- over the files a change touches.
+
+inputs:
+  base:
+    description: The revision HEAD is compared against.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # Shared between the root steps below and the build itself, so that
+    # prek-action's cache covers the hook environments and the Go toolchain prek
+    # downloads for the pkglint hook -- the build user's own $HOME wouldn't be
+    # restored into or saved from.
+    - shell: bash
+      run: echo "PREK_HOME=${RUNNER_TEMP:-/tmp}/prek" >>"$GITHUB_ENV"
+
+    - name: Create the build user
+      # makepkg refuses to run as root, and a container job is root. The sudo
+      # rule is what lets the hook's `--makepkg-arg=-s` resolve dependencies:
+      # `makepkg -s` runs `sudo -k pacman -S ...`, which on a stock image would
+      # stop on a password prompt. This is also why the build runs in an Arch
+      # container the job owns rather than through pkglint's own --image: that
+      # one hands the container the calling uid, which has no passwd entry at
+      # all, so there is nothing to grant.
+      shell: bash
+      run: |
+        set -eu
+        useradd --create-home builder
+        echo 'builder ALL=(ALL) NOPASSWD: /usr/bin/pacman' >/etc/sudoers.d/builder
+        chown -R builder: "$GITHUB_WORKSPACE"
+
+    - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece
+      with:
+        install-only: "true"
+
+    # One invocation: --stage manual picks up the pre-commit-stage hooks too,
+    # and prek works out the changed files from the diff itself.
+    - name: prek run
+      shell: bash
+      env:
+        BASE: ${{ inputs.base }}
+      run: |
+        set -eu
+        mkdir -p "$PREK_HOME"
+        chown -R builder: "$PREK_HOME"
+        su builder -c "$(command -v prek) run --stage manual --color=always --from-ref $BASE --to-ref HEAD"

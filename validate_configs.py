@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Validate that .pre-commit-config.yaml and nvchecker.toml have entries for all packages."""
+"""Validate that nvchecker.toml has an entry for every package."""
 
 import os
-import re
 import sys
 
 try:
@@ -11,11 +10,6 @@ except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore[no-redef]
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-# Packages that are known to be excluded from pre-commit (with reasons).
-PRE_COMMIT_EXCLUDES: dict[str, str] = {
-    "python-e3-testsuite": "depends on python-e3-core[aur]; no precedence for AUR deps",
-}
 
 # Mapping from nvchecker section name → package directory name, for cases
 # where they differ.
@@ -34,17 +28,6 @@ def find_packages() -> set[str]:
     return packages
 
 
-def get_precommit_ids() -> set[str]:
-    """Return the set of hook ids defined in .pre-commit-config.yaml."""
-    config_path = os.path.join(REPO_ROOT, ".pre-commit-config.yaml")
-    with open(config_path) as f:
-        content = f.read()
-
-    # Match all '- id: <value>' lines (including commented-out ones are skipped
-    # since they start with #).
-    return set(re.findall(r"^\s+- id:\s*(.+)$", content, re.MULTILINE))
-
-
 def get_nvchecker_sections() -> set[str]:
     """Return the set of section names in nvchecker.toml, mapped to package dir names."""
     toml_path = os.path.join(REPO_ROOT, "nvchecker.toml")
@@ -60,19 +43,9 @@ def get_nvchecker_sections() -> set[str]:
 
 def main() -> int:
     packages = find_packages()
-    precommit_ids = get_precommit_ids()
     nvchecker_pkgs = get_nvchecker_sections()
 
     errors: list[str] = []
-
-    # Check pre-commit coverage.
-    missing_precommit = packages - precommit_ids - set(PRE_COMMIT_EXCLUDES)
-    for pkg in sorted(missing_precommit):
-        errors.append(f".pre-commit-config.yaml: missing hook for '{pkg}'")
-
-    extra_precommit = precommit_ids - packages
-    for pkg in sorted(extra_precommit):
-        errors.append(f".pre-commit-config.yaml: hook '{pkg}' has no matching package directory")
 
     # Check nvchecker coverage.
     missing_nvchecker = packages - nvchecker_pkgs
@@ -82,11 +55,6 @@ def main() -> int:
     extra_nvchecker = nvchecker_pkgs - packages
     for pkg in sorted(extra_nvchecker):
         errors.append(f"nvchecker.toml: entry '{pkg}' has no matching package directory")
-
-    # Report known exclusions for visibility.
-    for pkg, reason in sorted(PRE_COMMIT_EXCLUDES.items()):
-        if pkg in packages:
-            print(f"INFO: '{pkg}' excluded from pre-commit: {reason}")
 
     if errors:
         print()

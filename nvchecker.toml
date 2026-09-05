@@ -595,7 +595,7 @@ prefix = "v"
 
 [wacli]
 source = "github"
-github = "steipete/wacli"
+github = "openclaw/wacli"
 use_max_tag = true
 prefix = "v"
 

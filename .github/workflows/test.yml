@@ -13,7 +13,7 @@ jobs:
   presubmit:
     runs-on: ubuntu-latest
     if: ${{ github.ref_name != 'master' }}
-    container: archlinux:base-devel
+    container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
     steps:
       - run: pacman -Syu --noconfirm --needed git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -27,7 +27,7 @@ jobs:
   postsubmit:
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'master' }}
-    container: archlinux:base-devel
+    container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
     steps:
       - run: pacman -Syu --noconfirm --needed git
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1

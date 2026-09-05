@@ -24,7 +24,7 @@ jobs:
   run-command:
     runs-on: ubuntu-latest
     # makepkg and updpkgsums are Arch-only.
-    container: archlinux:base-devel
+    container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
     environment:
       name: nightly
     permissions:
@@ -38,6 +38,8 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.PAT }}
       - run: |
+          # The workspace is owned by the host runner's uid, not the container's root.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - uses: ./.github/actions/build-user

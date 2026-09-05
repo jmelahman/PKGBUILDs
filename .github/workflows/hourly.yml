@@ -38,13 +38,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: |
+          # Anonymous GitHub API access is capped at 60 requests/hour and there
+          # are ~100 GitHub-sourced packages, so an unauthenticated run gets
+          # rate limited about halfway through the list. pkgreleaser.py feeds
+          # the token to nvchecker via a keyfile; refuse to run without one.
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "::error::GITHUB_TOKEN is empty; nvchecker would run unauthenticated and get rate limited"
+            exit 1
+          fi
           FAILED=0
           for dir in **/; do
             [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
             echo "Checking package: ${dir///}"
             # NOTE: Spinning up a container each time may be slow, but it's a poor man's backoff.
+            # `-e GITHUB_TOKEN` forwards the variable from the environment; the value is
+            # never placed on the command line.
             if ! MESSAGE=$(
-              docker run --rm -v "$PWD:/mnt" -w "/mnt" -u "$(id -u):$(id -g)" lahmanja/nvchecker:2026-03-01 \
+              docker run --rm -v "$PWD:/mnt" -w "/mnt" -u "$(id -u):$(id -g)" -e GITHUB_TOKEN \
+                lahmanja/nvchecker:2026-03-01 \
                 python ./pkgreleaser.py "${dir///}"
             ); then
               echo "::error::docker run failed for ${dir///}"

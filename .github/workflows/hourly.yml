@@ -21,7 +21,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  run-command:
+  release:
+    name: Open update PRs
     runs-on: ubuntu-latest
     # makepkg and updpkgsums are Arch-only.
     container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
@@ -31,19 +32,24 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - run: pacman -Syu --noconfirm --needed git github-cli pacman-contrib python-uv
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - name: Install packages
+        run: pacman -Syu --noconfirm --needed git github-cli pacman-contrib python-uv
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: true
           token: ${{ secrets.PAT }}
-      - run: |
+      - name: Configure git
+        run: |
           # The workspace is owned by the host runner's uid, not the container's root.
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - uses: ./.github/actions/build-user
-      - run: |
+      - name: Create the build user
+        uses: $/.github/actions/build-user
+      - name: Check upstreams and open PRs
+        run: |
           if [ -z "$GITHUB_TOKEN" ]; then
             echo "::error::GITHUB_TOKEN is empty; nvchecker would be rate limited without it"
             exit 1

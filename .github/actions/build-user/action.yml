@@ -4,7 +4,8 @@ description: Add an unprivileged user that owns the workspace, since makepkg ref
 runs:
   using: composite
   steps:
-    - shell: bash
+    - name: Create the build user
+      shell: bash
       run: |
         set -eu
         useradd --create-home builder

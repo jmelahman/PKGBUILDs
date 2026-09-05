@@ -1,20 +1,12 @@
-*.tar
-*.whl
-*.tar.*
-*.jar
-*.exe
-*.msi
-*.zip
-*.tgz
-*.log
-*.log.*
-*.sig
+# Package directories hold only what the AUR needs. makepkg drops sources,
+# clones and built packages next to the PKGBUILD.
+/*/*
+!/*/PKGBUILD
+!/*/.SRCINFO
+!/*/README.md
+!/*/*.patch
+!/*/*.install
+!/*/.nvchecker.toml
+!/.github/*
 
-!**/PKGBUILD
-!**/README.md
-!**/.SRCINFO
-!**/*.patch
-!.github/
-
-pkg/
-src/
+__pycache__/

@@ -57,31 +57,30 @@ jobs:
           cat >"$RUNNER_TEMP/release.sh" <<'SCRIPT'
           set -u
           FAILED=0
-          for dir in */; do
-            PACKAGE="${dir%/}"
-            [[ "$PACKAGE" =~ ^[a-zA-Z0-9_-]+$ ]] || { echo "Invalid input"; exit 1; }
-            echo "Checking package: $PACKAGE"
-            if ! MESSAGE=$(uv run ./pkgreleaser.py "$PACKAGE"); then
-              echo "::error::pkgreleaser failed for $PACKAGE"
-              FAILED=1
-              continue
-            fi
+          # One nvchecker run for every package. Each bump is reported as
+          # "Bump <package> from <old> to <new>" and edits only that package.
+          BUMPS=$(uv run ./pkgreleaser.py) || FAILED=1
+          while read -r MESSAGE; do
             [ -n "$MESSAGE" ] || continue
-            VERSION=$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$') || true
-            if [ -z "$VERSION" ]; then
+            PACKAGE=$(echo "$MESSAGE" | grep -oP '^Bump \K[a-zA-Z0-9_-]+(?= from )') || {
+              echo "::warning::Unexpected output: $MESSAGE"
+              continue
+            }
+            VERSION=$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$') || {
               echo "::warning::Could not extract version from: $MESSAGE"
               continue
-            fi
+            }
             BRANCH="pkgreleaser/$PACKAGE/$VERSION"
             if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
               continue
             fi
-            git checkout -b "$BRANCH" origin/master
-            git commit -am "$MESSAGE"
+            git checkout -q -b "$BRANCH" origin/master
+            git add "$PACKAGE"
+            git commit -q -m "$MESSAGE"
             git push -f -u origin "$BRANCH"
             gh pr create --base master --head "$BRANCH" --fill
             gh pr merge --auto --squash "$BRANCH"
-          done
+          done <<<"$BUMPS"
           exit "$FAILED"
           SCRIPT
           # makepkg refuses to run as root; sudo resets HOME to the build user's.

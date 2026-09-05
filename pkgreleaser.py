@@ -22,6 +22,7 @@ ENTRY_TO_UPSTREAM = {
     "python-e3-core": "e3-core",
     "python-e3-testsuite": "e3-testsuite",
 }
+UPSTREAM_TO_ENTRY = {v: k for k, v in ENTRY_TO_UPSTREAM.items()}
 
 
 class Package(NamedTuple):
@@ -31,17 +32,11 @@ class Package(NamedTuple):
     gitref: str | None
 
 
-def run_nvchecker(entry: str) -> list[str]:
-    cmd = [
-        "python",
-        "-m",
-        "nvchecker",
-        "--entry",
-        ENTRY_TO_UPSTREAM.get(entry, entry),
-        "--logger=json",
-        "-c",
-        "nvchecker.toml",
-    ]
+def run_nvchecker(entry: str | None = None) -> list[str]:
+    """Run nvchecker for one entry, or for every entry in the config when None."""
+    cmd = ["python", "-m", "nvchecker", "--logger=json", "-c", "nvchecker.toml"]
+    if entry is not None:
+        cmd += ["--entry", ENTRY_TO_UPSTREAM.get(entry, entry)]
 
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -59,23 +54,27 @@ def run_nvchecker(entry: str) -> list[str]:
     return result.stdout.splitlines()
 
 
-def parse_nvchecker_output(lines: list[str]) -> list[Package]:
-    nv_data = []
+def parse_nvchecker_output(lines: list[str]) -> tuple[list[Package], bool]:
+    """Return the packages nvchecker resolved and whether any entry failed."""
+    packages = []
+    failed = False
     for line in lines:
         data = json.loads(line)
-        try:
-            nv_data.append(
+        name = UPSTREAM_TO_ENTRY.get(data["name"], data["name"])
+        if "version" in data:
+            packages.append(
                 Package(
-                    name=ENTRY_TO_UPSTREAM.get(data["name"]) or data["name"],
+                    name=name,
                     version=data["version"],
                     revision=data.get("revision"),
                     gitref=data.get("rich_result", {}).get("gitref"),
                 )
             )
-        except KeyError:
-            logging.warning("Skipping malformed nvchecker entry '%s': %s", data["name"], data["event"])
-            raise
-    return nv_data
+        elif data.get("level") == "error" and data["event"] != "no-result":
+            # nvchecker logs the failure itself and then a "no-result" line for the same entry.
+            logging.error("nvchecker failed for '%s': %s", name, data.get("error") or data["event"])
+            failed = True
+    return packages, failed
 
 
 def extract_git_url(content: str) -> str | None:
@@ -164,20 +163,30 @@ def _directory(value: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Process package version updates")
-    parser.add_argument("package", type=_directory, help="The name of the package to process")
+    parser.add_argument(
+        "packages", nargs="*", type=_directory, help="Packages to process (default: every entry in nvchecker.toml)"
+    )
     args = parser.parse_args()
 
-    lines = run_nvchecker(args.package)
-    try:
-        packages = parse_nvchecker_output(lines)
-    except KeyError:
-        return 1
+    if args.packages:
+        packages, failed = [], False
+        for entry in args.packages:
+            found, entry_failed = parse_nvchecker_output(run_nvchecker(entry))
+            packages += [p for p in found if p.name == entry]
+            failed |= entry_failed
+    else:
+        packages, failed = parse_nvchecker_output(run_nvchecker())
 
-    package = next((p for p in packages if p.name == args.package), None)
-
-    if package:
-        process_package(package)
-    return 0
+    for package in packages:
+        if not os.path.isdir(package.name):
+            logging.warning("Skipping '%s': no such package directory", package.name)
+            continue
+        try:
+            process_package(package)
+        except (RuntimeError, subprocess.CalledProcessError):
+            logging.exception("Failed to process '%s'", package.name)
+            failed = True
+    return int(failed)
 
 
 if __name__ == "__main__":

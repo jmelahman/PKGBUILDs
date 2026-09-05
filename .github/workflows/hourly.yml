@@ -9,13 +9,13 @@ on:
   workflow_dispatch:
 
 # This workflow pushes branches and opens PRs, so overlapping runs race each
-# other and hammer the nvchecker containers. Every push to master triggers it,
-# so a batch of merges can otherwise stampede dozens of concurrent runs.
-# cancel-in-progress is false deliberately: a run that is midway through
-# `git push` / `gh pr create` must be allowed to finish, or it can leave a
-# branch pushed with no PR behind it. GitHub keeps at most one pending run per
-# group and discards older pending ones, so the stampede collapses to a single
-# queued run without ever interrupting work in flight.
+# other. Every push to master triggers it, so a batch of merges can otherwise
+# stampede dozens of concurrent runs. cancel-in-progress is false deliberately:
+# a run that is midway through `git push` / `gh pr create` must be allowed to
+# finish, or it can leave a branch pushed with no PR behind it. GitHub keeps at
+# most one pending run per group and discards older pending ones, so the
+# stampede collapses to a single queued run without ever interrupting work in
+# flight.
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
@@ -23,12 +23,15 @@ concurrency:
 jobs:
   run-command:
     runs-on: ubuntu-latest
+    # makepkg and updpkgsums are Arch-only.
+    container: archlinux:base-devel
     environment:
       name: nightly
     permissions:
       contents: write
       pull-requests: write
     steps:
+      - run: pacman -Syu --noconfirm --needed git github-cli pacman-contrib python-uv
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
           fetch-depth: 0
@@ -37,48 +40,43 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - uses: ./.github/actions/build-user
       - run: |
-          # Anonymous GitHub API access is capped at 60 requests/hour and there
-          # are ~100 GitHub-sourced packages, so an unauthenticated run gets
-          # rate limited about halfway through the list. pkgreleaser.py feeds
-          # the token to nvchecker via a keyfile; refuse to run without one.
           if [ -z "$GITHUB_TOKEN" ]; then
-            echo "::error::GITHUB_TOKEN is empty; nvchecker would run unauthenticated and get rate limited"
+            echo "::error::GITHUB_TOKEN is empty; nvchecker would be rate limited without it"
             exit 1
           fi
+          cat >"$RUNNER_TEMP/release.sh" <<'SCRIPT'
+          set -u
           FAILED=0
-          for dir in **/; do
-            [[ "$dir" =~ ^[a-zA-Z0-9/_-]+$ ]] || { echo "Invalid input"; exit 1; }
-            echo "Checking package: ${dir///}"
-            # NOTE: Spinning up a container each time may be slow, but it's a poor man's backoff.
-            # `-e GITHUB_TOKEN` forwards the variable from the environment; the value is
-            # never placed on the command line.
-            if ! MESSAGE=$(
-              docker run --rm -v "$PWD:/mnt" -w "/mnt" -u "$(id -u):$(id -g)" -e GITHUB_TOKEN \
-                lahmanja/nvchecker:2026-03-01 \
-                python ./pkgreleaser.py "${dir///}"
-            ); then
-              echo "::error::docker run failed for ${dir///}"
+          for dir in */; do
+            PACKAGE="${dir%/}"
+            [[ "$PACKAGE" =~ ^[a-zA-Z0-9_-]+$ ]] || { echo "Invalid input"; exit 1; }
+            echo "Checking package: $PACKAGE"
+            if ! MESSAGE=$(uv run ./pkgreleaser.py "$PACKAGE"); then
+              echo "::error::pkgreleaser failed for $PACKAGE"
               FAILED=1
               continue
             fi
-            if [ -n "$MESSAGE" ]; then
-              VERSION=$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$') || true
-              if [ -z "$VERSION" ]; then
-                echo "::warning::Could not extract version from: $MESSAGE"
-                continue
-              fi
-              BRANCH="pkgreleaser/${dir}${VERSION}"
-              if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                continue
-              fi
-              git checkout -b "$BRANCH" origin/master
-              git commit -am "$MESSAGE"
-              git push -f -u origin "$BRANCH"
-              gh pr create --base master --head "$BRANCH" --fill
-              gh pr merge --auto --squash "$BRANCH"
+            [ -n "$MESSAGE" ] || continue
+            VERSION=$(echo "$MESSAGE" | grep -oP '\b[0-9]+\.[0-9]+\.[0-9]+$') || true
+            if [ -z "$VERSION" ]; then
+              echo "::warning::Could not extract version from: $MESSAGE"
+              continue
             fi
+            BRANCH="pkgreleaser/$PACKAGE/$VERSION"
+            if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+              continue
+            fi
+            git checkout -b "$BRANCH" origin/master
+            git commit -am "$MESSAGE"
+            git push -f -u origin "$BRANCH"
+            gh pr create --base master --head "$BRANCH" --fill
+            gh pr merge --auto --squash "$BRANCH"
           done
           exit "$FAILED"
+          SCRIPT
+          # makepkg refuses to run as root; sudo resets HOME to the build user's.
+          sudo -u builder --preserve-env=GITHUB_TOKEN bash "$RUNNER_TEMP/release.sh"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}

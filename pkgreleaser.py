@@ -45,17 +45,11 @@ def run_nvchecker(entry: str) -> list[str]:
 
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        # Anonymous GitHub API access is capped at 60 requests/hour, which is
-        # not enough for this many packages. Fine for a single local run.
-        logging.warning("GITHUB_TOKEN is not set; GitHub API requests will be unauthenticated")
+        logging.warning("GITHUB_TOKEN is not set; GitHub API requests will be rate limited")
         result = subprocess.run(cmd, check=True, text=True, stdout=subprocess.PIPE)  # noqa: S603
         return result.stdout.splitlines()
 
-    # nvchecker looks the GitHub token up as `[keys] github = "..."` in a
-    # separate keyfile (not `[keys.github] token = ...`, which yields a dict and
-    # a garbage Authorization header). NamedTemporaryFile is created 0600 and
-    # the token is passed via the file rather than argv so it never shows up in
-    # `ps` output or the process's command line.
+    # Passed via a 0600 keyfile rather than argv so the token never shows up in `ps`.
     with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete_on_close=False) as f:
         f.write(f"[keys]\ngithub = {json.dumps(token)}\n")
         f.close()

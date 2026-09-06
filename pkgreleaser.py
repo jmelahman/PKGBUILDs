@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 from typing import NamedTuple
 
@@ -34,7 +35,7 @@ class Package(NamedTuple):
 
 def run_nvchecker(entry: str | None = None) -> list[str]:
     """Run nvchecker for one entry, or for every entry in the config when None."""
-    cmd = ["python", "-m", "nvchecker", "--logger=json", "-c", "nvchecker.toml"]
+    cmd = [sys.executable, "-m", "nvchecker", "--logger=json", "-c", "nvchecker.toml"]
     if entry is not None:
         cmd += ["--entry", ENTRY_TO_UPSTREAM.get(entry, entry)]
 

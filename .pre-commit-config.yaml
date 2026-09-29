@@ -1,3 +1,5 @@
+hide_status: [passed, skipped]
+
 repos:
   - repo: https://github.com/jmelahman/pkglint
     rev: a3b3651b15d3c2b04b2548a39925643a625d5f4e # frozen: v1.6.1

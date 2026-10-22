@@ -11,10 +11,25 @@ permissions: {}
 
 jobs:
   presubmit:
-    name: Lint and build changed packages
+    # Spelling the names out in the matrix, and interpolating them here, keeps
+    # GitHub from appending a "(<matrix value>)" suffix, so the Arch job still
+    # reports under the context master's ruleset requires.
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     if: ${{ github.ref_name != 'master' }}
-    container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
+    strategy:
+      # CachyOS builds with its own flags (-march=native -O3, LTO), so a failure
+      # there says nothing about the Arch build and must not cancel it.
+      fail-fast: false
+      matrix:
+        include:
+          - name: Lint and build changed packages
+            image: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
+          # Arch-derived, so the same hooks run unchanged; base-devel is already
+          # in the image.
+          - name: Lint and build changed packages (CachyOS)
+            image: cachyos/cachyos@sha256:94fed22b6ceb54292f0466d34962a37840760488a1b1393dadda4b0c7dd9b96a # 2026-10-21
+    container: ${{ matrix.image }}
     steps:
       - name: Install git
         run: pacman -Syu --noconfirm --needed git
@@ -29,10 +44,18 @@ jobs:
           base: origin/master
 
   postsubmit:
-    name: Lint and build merged packages
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'master' }}
-    container: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Lint and build merged packages
+            image: archlinux:base-devel@sha256:84cd9ef000b3cff245ec028e87965b84724f4bf1cc63fc2741ba927b88515ed6 # 2026-09-05
+          - name: Lint and build merged packages (CachyOS)
+            image: cachyos/cachyos@sha256:94fed22b6ceb54292f0466d34962a37840760488a1b1393dadda4b0c7dd9b96a # 2026-10-21
+    container: ${{ matrix.image }}
     steps:
       - name: Install git
         run: pacman -Syu --noconfirm --needed git

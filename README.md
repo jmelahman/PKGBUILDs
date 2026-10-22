@@ -24,9 +24,10 @@ prek run --stage manual --files $PACKAGE/PKGBUILD
 ```
 
 The build runs `makepkg -s` on the host, so it asks for a sudo password only
-when a dependency is missing. CI runs the same hook inside an
-`archlinux:base-devel` container, as a build user with passwordless
-`sudo pacman`.
+when a dependency is missing. CI runs the same hook as a build user with
+passwordless `sudo pacman`, twice over: once inside an `archlinux:base-devel`
+container and once inside a `cachyos/cachyos` one, which compiles with CachyOS's
+own flags (`-march=native -O3`, LTO).
 
 ## Running tests
 

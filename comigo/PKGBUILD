@@ -3,7 +3,7 @@
 # Source: https://github.com/jmelahman/pkgbuilds
 
 pkgname=comigo
-pkgver=1.3.10
+pkgver=1.4.0
 pkgrel=1
 pkgdesc="Comic & Manga Reader in Linux，Windows，MacOS。简单跨平台的漫画阅读器。わかりやすい漫画リーダー。"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ url="https://github.com/yumenaka/comigo"
 license=('MIT')
 depends=('glibc')
 makedepends=('go' 'git')
-_commit='4aaddc207399c01098b84d07e68cf6695134d995'
+_commit='d90b1aaa55e47d8eb271c140d9132040575fff54'
 source=("git+https://github.com/yumenaka/comigo.git#commit=$_commit")
 sha256sums=('SKIP')
 
